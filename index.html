@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="ActionParty: Multi-Subject Action Binding in Generative Video Games">
+  <meta name="keywords" content="ActionParty, World Models, Video Generation, Action Binding, Multi-Agent, Melting Pot">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ActionParty</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">ActionParty: Multi-Subject Action Binding in Generative Video Games</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://alexpondaven.github.io/">Alexander Pondaven</a><sup>1,2</sup>,</span>
+            <span class="author-block">
+              <a href="https://wuziyi616.github.io/">Ziyi Wu</a><sup>3</sup>,</span>
+            <span class="author-block">
+              <a href="https://www.gilitschenski.org/igor/">Igor Gilitschenski</a><sup>3</sup>,</span>
+            <span class="author-block">
+              <a href="https://eng.ox.ac.uk/people/philip-torr/">Philip Torr</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="https://stulyakov.com/">Sergey Tulyakov</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://fabvio.github.io/">Fabio Pizzati</a><sup>4</sup>,</span>
+            <span class="author-block">
+              <a href="https://aliaksandrsiarohin.github.io/aliaksandr-siarohin-website/">Aliaksandr Siarohin</a><sup>1</sup></span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Snap Research,</span>
+            <span class="author-block"><sup>2</sup>University of Oxford,</span>
+            <span class="author-block"><sup>3</sup>University of Toronto,</span>
+            <span class="author-block"><sup>4</sup>MBZUAI</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="https://arxiv.org/pdf/2604.02330"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2604.02330"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="ai ai-arxiv"></i></span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/action-party/action-party"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>Code</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="./supplementary/index.html"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="far fa-images"></i></span>
+                  <span>More Examples</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Teaser: Action Binding Problem -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <div class="has-text-centered">
+        <img src="./static/figures/action_binding_problem.png" alt="Action Binding Problem" style="max-width:650px; width:100%;">
+      </div>
+      <h2 class="subtitle has-text-centered" style="margin-top: 14px; font-weight:600; font-size:1.2rem; color:#333;">
+        Action Binding Problem
+      </h2>
+      <div class="content has-text-justified" style="max-width:780px; margin:0.25rem auto 0 auto;">
+        <p style="font-size:0.95rem; color:#555;">
+          Existing video generation models struggle to bind distinct actions to specific subjects.
+          Even in a minimal setup, two coloured shapes on a white background, a state-of-the-art model (Veo&nbsp;3) fails when prompted with per-subject action sequences such as
+          <i>&ldquo;The red triangle moves right and the blue square moves up&hellip;&rdquo;</i>.
+          Actions are frequently swapped between subjects or ignored entirely.
+          <span class="methodname">ActionParty</span> solves this by introducing per-subject state tokens with a spatial biasing mechanism, enabling correct multi-subject action control.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Abstract -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3 has-text-centered">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Recent advances in video diffusion have enabled the development of &ldquo;world models&rdquo; capable of simulating interactive environments.
+            However, these models are largely restricted to single-agent settings, failing to control multiple agents simultaneously in a scene.
+          </p>
+          <p>
+            In this work, we tackle a fundamental issue of <b>action binding</b> in existing video diffusion models, which struggle to associate specific actions with their corresponding subjects.
+            We propose <span class="methodname">ActionParty</span>, an action-controllable multi-subject world model for generative video games.
+            It introduces <i>subject state</i> tokens, <i>i.e.</i> latent variables that persistently capture the state of each subject in the scene.
+            By jointly modeling state tokens and video latents with a spatial biasing mechanism, we disentangle global video frame rendering from individual action-controlled subject updates.
+          </p>
+          <p>
+            We evaluate <span class="methodname">ActionParty</span> on the Melting Pot benchmark, demonstrating the first video world model capable of controlling <b>up to seven players</b> simultaneously across <b>46 diverse environments</b>.
+            Our results show significant improvements in action-following accuracy and identity consistency, while enabling robust autoregressive tracking of subjects through complex interactions.
+            See <a href="./supplementary/index.html">more examples</a> for generations across all 46 games.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ActionParty Generations -->
+<section class="section" style="background: #f9f9f9;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3 has-text-centered">ActionParty Generations</h2>
+        <div class="content has-text-justified" style="max-width:780px; margin:0 auto 1rem auto;">
+          <p>
+            <span class="methodname">ActionParty</span> operates as a <b>generative game engine</b>, jointly modeling video frames and the state of each subject.
+            Given an initial frame and per-player action sequences, it autoregressively generates future game states entirely through learned video diffusion.
+            Each player is independently controlled: per-step actions are shown as icons, orientation cones indicate detected facing direction, and green/red borders denote whether each action was correctly executed.
+            Generations across all 46 environments with baseline comparisons are available in the <a href="./supplementary/index.html">full results gallery</a>.
+          </p>
+        </div>
+
+        <!-- Action Legend (always visible, above videos) -->
+        <div class="action-legend-box" style="max-width:780px; margin:0 auto 1.5rem auto; border:1px solid #ddd; border-radius:8px; background:#fff; padding:0.75rem 1rem;">
+          <div class="action-legend">
+            <div style="margin-bottom: 0.5rem;">
+              <strong style="font-size: 0.85rem;">Action Icons</strong> <span style="font-size: 0.75rem; color: #999;">(relative to player orientation)</span>
+            </div>
+            <div class="legend-row" style="margin-bottom: 0.5rem;">
+              <div class="legend-item">
+                <svg width="24" height="24" viewBox="0 0 28 28"><circle cx="14" cy="14" r="12" fill="#fff" stroke="#999" stroke-width="2"/><text x="14" y="15" text-anchor="middle" dominant-baseline="central" font-family="DejaVu Sans,sans-serif" font-weight="bold" font-size="14" fill="#222">F</text></svg>
+                Forward
+              </div>
+              <div class="legend-item">
+                <svg width="24" height="24" viewBox="0 0 28 28"><circle cx="14" cy="14" r="12" fill="#fff" stroke="#999" stroke-width="2"/><text x="14" y="15" text-anchor="middle" dominant-baseline="central" font-family="DejaVu Sans,sans-serif" font-weight="bold" font-size="14" fill="#222">B</text></svg>
+                Backward
+              </div>
+              <div class="legend-item">
+                <svg width="24" height="24" viewBox="0 0 28 28"><circle cx="14" cy="14" r="12" fill="#fff" stroke="#999" stroke-width="2"/><text x="14" y="15" text-anchor="middle" dominant-baseline="central" font-family="DejaVu Sans,sans-serif" font-weight="bold" font-size="14" fill="#222">L</text></svg>
+                Strafe Left
+              </div>
+              <div class="legend-item">
+                <svg width="24" height="24" viewBox="0 0 28 28"><circle cx="14" cy="14" r="12" fill="#fff" stroke="#999" stroke-width="2"/><text x="14" y="15" text-anchor="middle" dominant-baseline="central" font-family="DejaVu Sans,sans-serif" font-weight="bold" font-size="14" fill="#222">R</text></svg>
+                Strafe Right
+              </div>
+              <div class="legend-item">
+                <svg width="24" height="24" viewBox="0 0 28 28"><circle cx="14" cy="14" r="12" fill="#fff" stroke="#999" stroke-width="2"/><text x="14" y="15" text-anchor="middle" dominant-baseline="central" font-family="DejaVu Sans,sans-serif" font-weight="bold" font-size="11" fill="#222">TL</text></svg>
+                Turn Left
+              </div>
+              <div class="legend-item">
+                <svg width="24" height="24" viewBox="0 0 28 28"><circle cx="14" cy="14" r="12" fill="#fff" stroke="#999" stroke-width="2"/><text x="14" y="15" text-anchor="middle" dominant-baseline="central" font-family="DejaVu Sans,sans-serif" font-weight="bold" font-size="11" fill="#222">TR</text></svg>
+                Turn Right
+              </div>
+              <div class="legend-item">
+                <svg width="24" height="24" viewBox="0 0 28 28"><circle cx="14" cy="14" r="12" fill="#fff" stroke="#999" stroke-width="2"/><polygon points="14,4 16.5,11 24,11 18,15.5 20,23 14,18.5 8,23 10,15.5 4,11 11.5,11" fill="#c8221e"/></svg>
+                Interact
+              </div>
+              <div class="legend-item">
+                <svg width="24" height="24" viewBox="0 0 28 28"><circle cx="14" cy="14" r="12" fill="#fff" stroke="#999" stroke-width="2"/><circle cx="14" cy="14" r="3.5" fill="#aaa"/></svg>
+                Noop
+              </div>
+            </div>
+            <div style="margin-bottom: 0.5rem;">
+              <strong style="font-size: 0.85rem;">Border Color</strong>
+            </div>
+            <div class="legend-row" style="margin-bottom: 0.5rem;">
+              <div class="legend-item"><span class="dot dot-white"></span> Pre-action (about to apply)</div>
+              <div class="legend-item"><span class="dot dot-green"></span> Correct effect</div>
+              <div class="legend-item"><span class="dot dot-red"></span> Incorrect effect</div>
+            </div>
+            <div style="margin-bottom: 0.5rem;">
+              <strong style="font-size: 0.85rem;">Orientation Cones</strong> <span style="font-size: 0.75rem; color: #999;">(detected player facing direction)</span>
+            </div>
+            <div class="legend-row">
+              <div class="legend-item">
+                <svg width="32" height="32" viewBox="0 0 40 40">
+                  <polygon points="20,20 12,4 28,4" fill="rgba(140,140,140,0.5)" stroke="none"/>
+                  <line x1="20" y1="20" x2="12" y2="4" stroke="#555" stroke-width="1.2"/>
+                  <line x1="20" y1="20" x2="28" y2="4" stroke="#555" stroke-width="1.2"/>
+                </svg>
+                Up (N)
+              </div>
+              <div class="legend-item">
+                <svg width="32" height="32" viewBox="0 0 40 40">
+                  <polygon points="20,20 36,12 36,28" fill="rgba(140,140,140,0.5)" stroke="none"/>
+                  <line x1="20" y1="20" x2="36" y2="12" stroke="#555" stroke-width="1.2"/>
+                  <line x1="20" y1="20" x2="36" y2="28" stroke="#555" stroke-width="1.2"/>
+                </svg>
+                Right (E)
+              </div>
+              <div class="legend-item">
+                <svg width="32" height="32" viewBox="0 0 40 40">
+                  <polygon points="20,20 28,36 12,36" fill="rgba(140,140,140,0.5)" stroke="none"/>
+                  <line x1="20" y1="20" x2="28" y2="36" stroke="#555" stroke-width="1.2"/>
+                  <line x1="20" y1="20" x2="12" y2="36" stroke="#555" stroke-width="1.2"/>
+                </svg>
+                Down (S)
+              </div>
+              <div class="legend-item">
+                <svg width="32" height="32" viewBox="0 0 40 40">
+                  <polygon points="20,20 4,12 4,28" fill="rgba(140,140,140,0.5)" stroke="none"/>
+                  <line x1="20" y1="20" x2="4" y2="12" stroke="#555" stroke-width="1.2"/>
+                  <line x1="20" y1="20" x2="4" y2="28" stroke="#555" stroke-width="1.2"/>
+                </svg>
+                Left (W)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="has-text-centered" style="margin-bottom:2rem;">
+          <video autoplay loop muted playsinline style="max-width:420px; width:100%; border-radius:8px; border:1px solid #ddd;">
+            <source src="./static/figures/demo_ours.mp4" type="video/mp4">
+          </video>
+          <p class="figure-caption">Coins (2 players), step-by-step generation with action annotations.</p>
+        </div>
+
+        <div class="columns is-centered">
+          <div class="column">
+            <video autoplay loop muted playsinline style="width:100%; border-radius:8px; border:1px solid #ddd;">
+              <source src="./static/figures/cooking_ours.mp4" type="video/mp4">
+            </video>
+            <p class="figure-caption">Cooking: Asymmetric (2 players)</p>
+          </div>
+          <div class="column">
+            <video autoplay loop muted playsinline style="width:100%; border-radius:8px; border:1px solid #ddd;">
+              <source src="./static/figures/crowded_ours.mp4" type="video/mp4">
+            </video>
+            <p class="figure-caption">Clean Up (4 players)</p>
+          </div>
+          <div class="column">
+            <video autoplay loop muted playsinline style="width:100%; border-radius:8px; border:1px solid #ddd;">
+              <source src="./static/figures/mining_ours.mp4" type="video/mp4">
+            </video>
+            <p class="figure-caption">Coop Mining (4 players)</p>
+          </div>
+        </div>
+        <p class="figure-caption has-text-centered" style="margin-top:0;">
+          See <a href="./supplementary/index.html">more examples</a> for all 46 games with seed variations and baseline comparisons.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Method: Architecture -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3 has-text-centered">Architecture Overview</h2>
+        <div class="content has-text-justified">
+          <p>
+            <span class="methodname">ActionParty</span> operates as a <b>generative game engine</b>, jointly modeling subject state tokens and video latents.
+            Given context frames, per-subject state tokens, and per-subject actions, the Diffusion Transformer (DiT) denoises the next frame while simultaneously predicting updated subject coordinates.
+            Attention masking enforces action-subject correspondence, enabling consistent multi-subject action control in a single forward pass.
+          </p>
+        </div>
+
+        <div class="method-figure">
+          <img src="./static/figures/architecture.png" alt="ActionParty architecture">
+          <p class="figure-caption">
+            Video tokens and subject state tokens are concatenated and processed through a DiT with 3D RoPE for spatial binding and attention masking for action isolation.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Method: Action-Subject Binding -->
+<section class="section" style="background: #f9f9f9;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3 has-text-centered">Action-Subject Binding</h2>
+        <div class="content has-text-justified">
+          <p>
+            The core challenge in multi-subject control is ensuring each player's actions only affect <i>that</i> player, not others.
+            We solve this with two complementary mechanisms:
+          </p>
+        </div>
+
+        <div class="columns is-vcentered" style="margin-top:0.5rem;">
+          <div class="column">
+            <div class="method-figure">
+              <img src="./static/figures/rope_binding.png" alt="RoPE spatial binding">
+              <p class="figure-caption">(a) <b>Self-attention</b>: 3D RoPE biases each subject state token to the spatial location of its corresponding subject in the video.</p>
+            </div>
+          </div>
+          <div class="column">
+            <div class="method-figure">
+              <img src="./static/figures/cross_attn_mask.png" alt="Cross-attention masking">
+              <p class="figure-caption">(b) <b>Cross-attention</b>: Masks ensure each subject state token only attends to its own actions. Text attends to video tokens.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="content has-text-justified">
+          <p>
+            Together, RoPE spatial biasing anchors subject state to specific spatial coordinates within the video, while attention masking isolates action-to-subject correspondence, even when subjects are visually identical.
+            This enables <span class="methodname">ActionParty</span> to scale to seven simultaneous players, enabling reliable subject localization and consistent action binding.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Related Links -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3 has-text-centered">Related Links</h2>
+        <div class="content has-text-justified">
+          <p>
+            <span class="methodname">ActionParty</span> builds on recent progress in video diffusion and world models.
+            <a href="https://sites.google.com/view/genie-2024/">Genie</a> and <a href="https://gamengen.github.io/">GameNGen</a> demonstrate video generation as world models for single-agent game environments.
+            <a href="https://github.com/Wan-Video/Wan2.1">Wan2.1</a> is the open-source DiT backbone that <span class="methodname">ActionParty</span> fine-tunes from.
+            The <a href="https://github.com/google-deepmind/meltingpot">Melting Pot</a> benchmark provides the 46 multi-agent game environments used for training and evaluation.
+          </p>
+          <p>
+            Recent concurrent work on multi-player world models, including <a href="https://enigma.inc/blog">Multiverse</a>, <a href="https://arxiv.org/abs/2602.22208">Solaris</a>, and <a href="https://arxiv.org/abs/2603.06679">MultiGen</a>, generates separate first-person views for each player. MultiGen also predicts explicit state, with one action targeting each player's video stream. In contrast, <span class="methodname">ActionParty</span> controls multiple subjects within the same shared video frame, directly tackling the action binding problem in world models.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- BibTeX -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{pondaven2026actionparty,
+      title={ActionParty: Multi-Subject Action Binding in Generative Video Games}, 
+      author={Alexander Pondaven and Ziyi Wu and Igor Gilitschenski and Philip Torr and Sergey Tulyakov and Fabio Pizzati and Aliaksandr Siarohin},
+      journal={arXiv preprint arXiv:2604.02330},
+      year={2026},
+}</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a class="icon-link" href="https://github.com/alexpondaven">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is licensed under a <a rel="license"
+                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+          <p>
+            Adapted from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
