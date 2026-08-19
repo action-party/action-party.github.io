@@ -15,7 +15,39 @@
       512,
       512
     ],
-    "recommended_window": "s2-s4"
+    "recommended_window": "s2-s4",
+    "zoom": {
+      "all": {
+        "crop": [
+          54,
+          0,
+          452,
+          398
+        ],
+        "upscale": 3,
+        "px": 1194
+      },
+      "mid": {
+        "crop": [
+          0,
+          56,
+          288,
+          344
+        ],
+        "upscale": 4,
+        "px": 1152
+      },
+      "hero": {
+        "crop": [
+          0,
+          164,
+          180,
+          344
+        ],
+        "upscale": 6,
+        "px": 1080
+      }
+    }
   },
   "cooking": {
     "caption": "Collaborative Cooking: Asymmetric (2 players)",
@@ -33,7 +65,39 @@
       400,
       336
     ],
-    "recommended_window": "s3-s5"
+    "recommended_window": "s3-s5",
+    "zoom": {
+      "all": {
+        "crop": [
+          52,
+          20,
+          192,
+          160
+        ],
+        "upscale": 7,
+        "px": 980
+      },
+      "mid": {
+        "crop": [
+          40,
+          0,
+          200,
+          160
+        ],
+        "upscale": 6,
+        "px": 960
+      },
+      "hero": {
+        "crop": [
+          40,
+          0,
+          200,
+          160
+        ],
+        "upscale": 6,
+        "px": 960
+      }
+    }
   },
   "cleanup": {
     "caption": "Clean Up (4 players)",
@@ -51,7 +115,39 @@
       512,
       480
     ],
-    "recommended_window": "s1-s3"
+    "recommended_window": "s1-s3",
+    "zoom": {
+      "all": {
+        "crop": [
+          24,
+          0,
+          436,
+          412
+        ],
+        "upscale": 2,
+        "px": 824
+      },
+      "mid": {
+        "crop": [
+          144,
+          32,
+          432,
+          320
+        ],
+        "upscale": 4,
+        "px": 1152
+      },
+      "hero": {
+        "crop": [
+          152,
+          136,
+          332,
+          316
+        ],
+        "upscale": 6,
+        "px": 1080
+      }
+    }
   },
   "mining": {
     "caption": "Coop Mining (4 players)",
@@ -69,7 +165,39 @@
       512,
       512
     ],
-    "recommended_window": "s1-s3"
+    "recommended_window": "s1-s3",
+    "zoom": {
+      "all": {
+        "crop": [
+          22,
+          130,
+          402,
+          510
+        ],
+        "upscale": 3,
+        "px": 1140
+      },
+      "mid": {
+        "crop": [
+          56,
+          168,
+          344,
+          456
+        ],
+        "upscale": 4,
+        "px": 1152
+      },
+      "hero": {
+        "crop": [
+          196,
+          224,
+          376,
+          404
+        ],
+        "upscale": 6,
+        "px": 1080
+      }
+    }
   },
   "predator_prey_alley_hunt": {
     "caption": "Predator Prey: Alley Hunt (7 players)",
@@ -87,7 +215,39 @@
       512,
       512
     ],
-    "recommended_window": "s1-s3"
+    "recommended_window": "s1-s3",
+    "zoom": {
+      "all": {
+        "crop": [
+          14,
+          0,
+          504,
+          490
+        ],
+        "upscale": 2,
+        "px": 980
+      },
+      "mid": {
+        "crop": [
+          128,
+          128,
+          416,
+          416
+        ],
+        "upscale": 4,
+        "px": 1152
+      },
+      "hero": {
+        "crop": [
+          152,
+          192,
+          332,
+          372
+        ],
+        "upscale": 6,
+        "px": 1080
+      }
+    }
   },
   "chemistry_three_cycles": {
     "caption": "Chemistry: Three Metabolic Cycles (7 players)",
@@ -105,7 +265,39 @@
       512,
       480
     ],
-    "recommended_window": "s1-s3"
+    "recommended_window": "s1-s3",
+    "zoom": {
+      "all": {
+        "crop": [
+          52,
+          4,
+          497,
+          449
+        ],
+        "upscale": 2,
+        "px": 890
+      },
+      "mid": {
+        "crop": [
+          192,
+          136,
+          480,
+          424
+        ],
+        "upscale": 4,
+        "px": 1152
+      },
+      "hero": {
+        "crop": [
+          204,
+          244,
+          384,
+          424
+        ],
+        "upscale": 6,
+        "px": 1080
+      }
+    }
   },
   "predator_prey_open": {
     "caption": "Predator Prey: Open (7 players)",
@@ -123,7 +315,39 @@
       512,
       512
     ],
-    "recommended_window": "s1-s3"
+    "recommended_window": "s1-s3",
+    "zoom": {
+      "all": {
+        "crop": [
+          52,
+          0,
+          512,
+          460
+        ],
+        "upscale": 2,
+        "px": 920
+      },
+      "mid": {
+        "crop": [
+          160,
+          0,
+          448,
+          288
+        ],
+        "upscale": 4,
+        "px": 1152
+      },
+      "hero": {
+        "crop": [
+          236,
+          308,
+          416,
+          488
+        ],
+        "upscale": 6,
+        "px": 1080
+      }
+    }
   },
   "paintball_ctf": {
     "caption": "Paintball: Capture the Flag (8 players)",
@@ -141,7 +365,39 @@
       512,
       512
     ],
-    "recommended_window": "s3-s5"
+    "recommended_window": "s3-s5",
+    "zoom": {
+      "all": {
+        "crop": [
+          22,
+          0,
+          496,
+          474
+        ],
+        "upscale": 2,
+        "px": 948
+      },
+      "mid": {
+        "crop": [
+          184,
+          96,
+          472,
+          384
+        ],
+        "upscale": 4,
+        "px": 1152
+      },
+      "hero": {
+        "crop": [
+          288,
+          244,
+          468,
+          424
+        ],
+        "upscale": 6,
+        "px": 1080
+      }
+    }
   },
   "fruit_market": {
     "caption": "Fruit Market: Concentric Rivers (6 players)",
@@ -159,6 +415,38 @@
       512,
       512
     ],
-    "recommended_window": "s2-s4"
+    "recommended_window": "s2-s4",
+    "zoom": {
+      "all": {
+        "crop": [
+          138,
+          150,
+          342,
+          354
+        ],
+        "upscale": 5,
+        "px": 1020
+      },
+      "mid": {
+        "crop": [
+          24,
+          40,
+          312,
+          328
+        ],
+        "upscale": 4,
+        "px": 1152
+      },
+      "hero": {
+        "crop": [
+          132,
+          148,
+          312,
+          328
+        ],
+        "upscale": 6,
+        "px": 1080
+      }
+    }
   }
 }

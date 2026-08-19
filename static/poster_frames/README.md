@@ -5,8 +5,7 @@ in a printed poster. Regenerate with:
 
 ```bash
 pip install imageio-ffmpeg pillow numpy
-python3 tools/extract_poster_frames.py            # 512 px frames
-python3 tools/extract_poster_frames.py --scale 3  # + 1536 px nearest-neighbour upscales for print
+python3 tools/extract_poster_frames.py
 ```
 
 ## How the frames were chosen
@@ -27,13 +26,42 @@ Any three consecutive states form a candidate window:
 | B      | s2–s4   | all three frames generated             |
 | C      | s3–s5   | all three generated, latest drift      |
 
+## Zoom tiers
+
+A whole 512 px map puts each sprite at ~16 px, far too small to read in print,
+so every window is also written as a zoomed crop. The crop box is picked from
+what moves across the three frames and is **shared by all three**, so the
+sequence stays registered; the crop is then upscaled nearest-neighbour to
+~1024 px so the pixel art stays crisp.
+
+| tier   | crop                                        | typical zoom |
+| ------ | ------------------------------------------- | ------------ |
+| *(whole map)* | `<game>/s1.png … s5.png`             | 1x           |
+| `all`  | bounding box of every subject that moves    | 2–7x         |
+| `mid`  | fixed 288 px window on the busiest cluster  | 4x           |
+| `hero` | fixed 180 px window on the busiest cluster  | 6x           |
+
+`all` keeps the whole map legible but barely zooms on the wide maps, where the
+subjects are spread corner to corner. `hero` trades that context for sprites
+and action badges big enough to read across a room — it is the tier used for
+the whole-poster line-ups.
+
 ## Contents
 
-- `<game>/s1.png … s5.png` — the five annotated states, cropped, 512 px
-- `<game>/strip_sX-sY.png` — the recommended window pre-composed as a strip
-- `_sheets/candidates_*.png` — every game × every window, for picking
-- `_sheets/poster_set_A.png`, `_sheets/poster_set_B.png` — two whole-poster line-ups
-- `manifest.json` — source video, frame indices, crop box and recommended window per game
+- `<game>/s1.png … s5.png` — the five annotated states, whole map, cropped
+- `<game>/strip_sX-sY.png` — the recommended window as a whole-map strip
+- `<game>/{all,mid,hero}_sX-sY/` — the recommended window at each zoom tier,
+  as three frames plus a pre-composed `strip.png`
+- `_sheets/candidates_*.png` — every game × every window, whole map
+- `_sheets/{all,mid,hero}_candidates_*.png` — the same at each zoom tier
+- `_sheets/poster_set_A.png`, `_sheets/poster_set_B.png` — two line-ups
+- `manifest.json` — source video, frame indices, crop boxes and upscale factors
+
+To write out a different window for a game, change its last field in `GAMES` in
+`tools/extract_poster_frames.py` and re-run; the contact sheets always cover all
+three. `--zoom-width` sets the target width of a zoomed frame, `--scale N` also
+writes NxN upscales of the whole map, and `--poster-tier` picks the tier the
+line-ups are built from.
 
 ## Games
 
