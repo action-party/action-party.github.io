@@ -1,0 +1,164 @@
+{
+  "coins": {
+    "caption": "Coins (2 players)",
+    "source": "static/figures/demo_ours.mp4",
+    "video_frames": [
+      15,
+      33,
+      51,
+      69,
+      79
+    ],
+    "crop": [
+      0,
+      0,
+      512,
+      512
+    ],
+    "recommended_window": "s2-s4"
+  },
+  "cooking": {
+    "caption": "Collaborative Cooking: Asymmetric (2 players)",
+    "source": "static/figures/cooking_ours.mp4",
+    "video_frames": [
+      15,
+      33,
+      51,
+      69,
+      79
+    ],
+    "crop": [
+      112,
+      176,
+      400,
+      336
+    ],
+    "recommended_window": "s3-s5"
+  },
+  "cleanup": {
+    "caption": "Clean Up (4 players)",
+    "source": "static/figures/crowded_ours.mp4",
+    "video_frames": [
+      15,
+      33,
+      51,
+      69,
+      79
+    ],
+    "crop": [
+      0,
+      32,
+      512,
+      480
+    ],
+    "recommended_window": "s1-s3"
+  },
+  "mining": {
+    "caption": "Coop Mining (4 players)",
+    "source": "static/figures/mining_ours.mp4",
+    "video_frames": [
+      15,
+      33,
+      51,
+      69,
+      79
+    ],
+    "crop": [
+      0,
+      0,
+      512,
+      512
+    ],
+    "recommended_window": "s1-s3"
+  },
+  "predator_prey_alley_hunt": {
+    "caption": "Predator Prey: Alley Hunt (7 players)",
+    "source": "static/figures/predator_prey_ours.mp4",
+    "video_frames": [
+      15,
+      33,
+      51,
+      69,
+      79
+    ],
+    "crop": [
+      0,
+      0,
+      512,
+      512
+    ],
+    "recommended_window": "s1-s3"
+  },
+  "chemistry_three_cycles": {
+    "caption": "Chemistry: Three Metabolic Cycles (7 players)",
+    "source": "static/figures/chemistry_ours.mp4",
+    "video_frames": [
+      15,
+      33,
+      51,
+      69,
+      79
+    ],
+    "crop": [
+      0,
+      31,
+      512,
+      480
+    ],
+    "recommended_window": "s1-s3"
+  },
+  "predator_prey_open": {
+    "caption": "Predator Prey: Open (7 players)",
+    "source": "supplementary/videos/predator_prey__open_s0.mp4",
+    "video_frames": [
+      15,
+      33,
+      51,
+      69,
+      79
+    ],
+    "crop": [
+      0,
+      0,
+      512,
+      512
+    ],
+    "recommended_window": "s1-s3"
+  },
+  "paintball_ctf": {
+    "caption": "Paintball: Capture the Flag (8 players)",
+    "source": "supplementary/videos/paintball__capture_the_flag_s0.mp4",
+    "video_frames": [
+      15,
+      33,
+      51,
+      69,
+      79
+    ],
+    "crop": [
+      0,
+      0,
+      512,
+      512
+    ],
+    "recommended_window": "s3-s5"
+  },
+  "fruit_market": {
+    "caption": "Fruit Market: Concentric Rivers (6 players)",
+    "source": "supplementary/videos/fruit_market__concentric_rivers_s0.mp4",
+    "video_frames": [
+      15,
+      33,
+      51,
+      69,
+      79
+    ],
+    "crop": [
+      0,
+      0,
+      512,
+      512
+    ],
+    "recommended_window": "s2-s4"
+  }
+}
