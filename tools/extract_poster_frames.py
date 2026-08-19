@@ -47,7 +47,7 @@ GAMES = {
     "coins": ("static/figures/demo_ours.mp4", 0,
               "Coins (2 players)", 2),
     "cooking": ("static/figures/cooking_ours.mp4", 0,
-                "Collaborative Cooking: Asymmetric (2 players)", 3),
+                "Collaborative Cooking: Asymmetric (2 players)", 2),
     "cleanup": ("static/figures/crowded_ours.mp4", 0,
                 "Clean Up (4 players)", 1),
     "mining": ("static/figures/mining_ours.mp4", 0,
@@ -59,24 +59,60 @@ GAMES = {
     "predator_prey_open": ("supplementary/videos/predator_prey__open_s0.mp4", 56,
                            "Predator Prey: Open (7 players)", 1),
     "paintball_ctf": ("supplementary/videos/paintball__capture_the_flag_s0.mp4", 56,
-                      "Paintball: Capture the Flag (8 players)", 3),
+                      "Paintball: Capture the Flag (8 players)", 2),
     "fruit_market": ("supplementary/videos/fruit_market__concentric_rivers_s0.mp4", 56,
-                     "Fruit Market: Concentric Rivers (6 players)", 2),
+                     "Fruit Market: Concentric Rivers (6 players)", 1),
 }
 
 
+# Each rollout state is held for 18 video frames while its overlay cycles
+# through three phases.  Same underlying game frame throughout - only the
+# annotation changes - so the phases can be mixed freely across a sequence.
+#
+#   post   badge shows the action that produced this frame, bordered green or
+#          red for whether the model executed it correctly (none for s1, which
+#          no action led into)
+#   clean  orientation cones only, no action badges - the plain game frame
+#   pre    badge shows, in white, the action about to be applied to this frame
+#          (none for s5, where the video ends)
+PHASES = {
+    "post": [None, 23, 41, 59, 77],
+    "clean": [6, 25, 43, 61, 79],
+    "pre": [15, 33, 51, 69, None],
+}
+
+# Frame used to place the crop boxes: annotated, so cones and badges stay in
+# shot.  Pre-action everywhere it exists, the verdict frame for the last state.
+LAYOUT_PHASE = ["pre", "pre", "pre", "pre", "post"]
+
+
+def window_frames(states, start):
+    """The three panels of a window: a clean frame, then two annotated ones.
+
+    The opening panel is the frame handed to the model, so it carries no action
+    badges - annotating it would suggest those actions produced it.  The two
+    generated panels that follow are badged with the action that produced them.
+    """
+    return [states["clean"][start - 1],
+            states["post"][start],
+            states["post"][start + 1]]
+
+
 def extract(path, header, dest):
-    """Write the five annotated state frames of `path` into `dest`."""
+    """Write every annotation phase of every state of `path` into `dest`."""
     os.makedirs(dest, exist_ok=True)
-    select = "+".join(r"eq(n\,%d)" % i for i in STATE_FRAMES)
+    wanted = sorted({i for idx in PHASES.values() for i in idx if i is not None})
+    select = "+".join(r"eq(n\,%d)" % i for i in wanted)
     # supplementary grids are 5 seeds side by side; keep the leftmost (seed 0)
     subprocess.run(
         [FFMPEG, "-y", "-loglevel", "error", "-i", os.path.join(REPO, path),
          "-vf", "select='%s',crop=512:512:0:%d" % (select, header),
-         "-vsync", "0", os.path.join(dest, "s%d.png")],
+         "-vsync", "0", os.path.join(dest, "raw%d.png")],
         check=True)
-    return [Image.open(os.path.join(dest, "s%d.png" % i)).convert("RGB")
-            for i in range(1, 6)]
+    raw = {n: Image.open(os.path.join(dest, "raw%d.png" % (i + 1))).convert("RGB")
+           for i, n in enumerate(wanted)}
+    return {phase: [None if i is None else raw[i] for i in idx]
+            for phase, idx in PHASES.items()}
 
 
 def content_box(frames, pad=0, thresh=12):
@@ -137,6 +173,22 @@ def action_box(frames, margin=26, min_side=150, square=True):
     return (x0, y0, x1, y1)
 
 
+def verdict(clean, post, thresh=40):
+    """Count green- and red-bordered action badges on an annotated frame.
+
+    Differencing against the same state's clean render isolates the badges
+    exactly, so the border colour can be read without finding the discs.  A red
+    border marks an action the model did not execute correctly - worth knowing
+    before one goes on a poster.
+    """
+    a = np.asarray(post, dtype=np.int16)
+    badge = np.abs(a - np.asarray(clean, dtype=np.int16)).max(axis=2) > thresh
+    r, g, b = a[..., 0], a[..., 1], a[..., 2]
+    green = badge & (g > r + 50) & (g > b + 50)
+    red = badge & (r > g + 60) & (r > b + 60)
+    return int(green.sum()), int(red.sum())
+
+
 def save_png(im, path, colors=256):
     """Save pixel art as an indexed PNG - a fraction of the size, no visible loss."""
     if im.mode == "RGB" and len(im.getcolors(1 << 24) or [1] * (colors + 1)) > colors:
@@ -167,10 +219,14 @@ def cluster_box(frames, side, thresh=18):
 TIERS = {"all": None, "mid": 288, "hero": 180}
 
 
-def zoom_window(frames, side, target=1024):
-    """Crop the window to the action and upscale it to `target` px wide."""
+def zoom_window(frames, side, target=1024, apply_to=None):
+    """Crop the window to the action and upscale it to `target` px wide.
+
+    `frames` is what the crop box is measured on; `apply_to` is what gets
+    cropped, when the panels being shown differ from the ones being measured.
+    """
     box = action_box(frames) if side is None else cluster_box(frames, side)
-    crops = [f.crop(box) for f in frames]
+    crops = [f.crop(box) for f in (apply_to or frames)]
     factor = max(1, int(round(target / crops[0].width)))
     if factor > 1:
         crops = [c.resize((c.width * factor, c.height * factor), Image.NEAREST)
@@ -216,11 +272,11 @@ def sheet(entries, path, tile=185):
 # Whole-poster line-ups to choose between: (title, [(game, window start)])
 POSTER_SETS = {
     "A": ("Set A - the four site games plus Alley Hunt (7 players)",
-          [("cooking", 3), ("cleanup", 1), ("mining", 1),
+          [("cooking", 2), ("cleanup", 1), ("mining", 1),
            ("predator_prey_alley_hunt", 1), ("coins", 2)]),
     "B": ("Set B - swaps in the light-palette and open-field rollouts",
-          [("cooking", 3), ("cleanup", 1), ("predator_prey_open", 1),
-           ("chemistry_three_cycles", 1), ("paintball_ctf", 3)]),
+          [("cooking", 2), ("cleanup", 1), ("predator_prey_open", 1),
+           ("chemistry_three_cycles", 1), ("paintball_ctf", 2)]),
 }
 
 
@@ -258,29 +314,44 @@ def main():
 
     os.makedirs(os.path.join(OUT, "_sheets"), exist_ok=True)
     manifest = {}
-    wide = {}                       # game -> five whole-map states
-    tiered = {t: {} for t in TIERS}  # tier -> game -> nine zoomed frames
+    wide = {}                        # game -> three whole-map panels per window
+    tiered = {t: {} for t in TIERS}  # tier -> game -> nine zoomed panels
     for key, (path, header, caption, rec) in GAMES.items():
         dest = os.path.join(OUT, key)
-        frames = extract(path, header, dest)
-        box = content_box(frames)
-        frames = [f.crop(box) for f in frames]
-        for i, f in enumerate(frames, 1):
-            save_png(f, os.path.join(dest, "s%d.png" % i))
-            if args.scale > 1:
+        states = extract(path, header, dest)
+        box = content_box([f for f in states["clean"] if f is not None])
+        states = {phase: [None if f is None else f.crop(box) for f in frames]
+                  for phase, frames in states.items()}
+        for phase, frames in states.items():
+            for i, f in enumerate(frames, 1):
+                if f is None:
+                    continue
+                save_png(f, os.path.join(dest, "%s_s%d.png" % (phase, i)))
+                if args.scale > 1:
                     save_png(f.resize((f.width * args.scale, f.height * args.scale),
-                         Image.NEAREST),
-                    os.path.join(dest, "s%d@%dx.png" % (i, args.scale)))
-        save_png(strip(frames[rec - 1:rec + 2]),
-                 os.path.join(dest, "strip_s%d-s%d.png" % (rec, rec + 2)))
-        wide[key] = frames
+                                      Image.NEAREST),
+                             os.path.join(dest, "%s_s%d@%dx.png"
+                                          % (phase, i, args.scale)))
+        for stale in os.listdir(dest):       # ffmpeg scratch
+            if stale.startswith("raw"):
+                os.remove(os.path.join(dest, stale))
 
+        layout = [states[p][i] for i, p in enumerate(LAYOUT_PHASE)]
+        marks = [None] + [verdict(states["clean"][i], states["post"][i])
+                          for i in range(1, 5)]
         zooms = {}
-        for tier, side in TIERS.items():
-            for start in range(1, 4):
-                window = frames[start - 1:start + 2]
-                zbox, factor, crops = zoom_window(window, side,
-                                                  target=args.zoom_width)
+        for start in range(1, 4):
+            panels = window_frames(states, start)
+            wide.setdefault(key, []).extend(panels)
+            if start == rec:
+                save_png(strip(panels),
+                         os.path.join(dest, "strip_s%d-s%d.png" % (start, start + 2)))
+            for tier, side in TIERS.items():
+                # place the crop on the annotated frames so no badge is clipped,
+                # then apply it to the panels actually being shown
+                zbox, factor, crops = zoom_window(layout[start - 1:start + 2], side,
+                                                  target=args.zoom_width,
+                                                  apply_to=panels)
                 tiered[tier].setdefault(key, []).extend(crops)
                 if start != rec:     # only the recommended window is written out
                     continue
@@ -289,29 +360,33 @@ def main():
                 os.makedirs(zdir, exist_ok=True)
                 for i, c in enumerate(crops, start):
                     save_png(c, os.path.join(zdir, "s%d.png" % i))
-                save_png(strip(crops, gutter=16),
-                         os.path.join(zdir, "strip.png"))
+                save_png(strip(crops, gutter=16), os.path.join(zdir, "strip.png"))
                 zooms[tier] = {"crop": list(zbox), "upscale": factor,
                                "px": crops[0].width}
 
         manifest[key] = {
             "caption": caption,
             "source": path,
-            "video_frames": STATE_FRAMES,
+            "phase_frames": PHASES,
             "crop": list(box),
             "recommended_window": "s%d-s%d" % (rec, rec + 2),
+            "panels": "clean s%d, post s%d, post s%d" % (rec, rec + 1, rec + 2),
+            "badge_pixels": {"s%d" % (i + 1): {"green": m[0], "red": m[1]}
+                             for i, m in enumerate(marks) if m},
             "zoom": zooms,
         }
-        print("%-26s s%d-s%d  crop=%s  %s" % (
+        flagged = ["s%d-s%d" % (w, w + 2) for w in range(1, 4)
+                   if any(marks[i][1] > 60 for i in (w, w + 1))]
+        print("%-26s s%d-s%d  crop=%s  %s%s" % (
             key, rec, rec + 2, box,
             "  ".join("%s=%dpx@%dx" % (t, z["crop"][2] - z["crop"][0],
-                                       z["upscale"]) for t, z in zooms.items())))
+                                       z["upscale"]) for t, z in zooms.items()),
+            "  red badge in " + ", ".join(flagged) if flagged else ""))
 
     keys = list(GAMES)
     for i in range(0, len(keys), 3):
         group = keys[i:i + 3]
-        sheet([(k, GAMES[k][2], [f for j in range(3) for f in wide[k][j:j + 3]])
-               for k in group],
+        sheet([(k, GAMES[k][2], wide[k]) for k in group],
               os.path.join(OUT, "_sheets", "candidates_%d.png" % (i // 3 + 1)))
         for tier in TIERS:
             sheet([(k, GAMES[k][2], tiered[tier][k]) for k in group],

@@ -11,20 +11,34 @@ python3 tools/extract_poster_frames.py
 ## How the frames were chosen
 
 Every result video is a **5-state rollout**: one initial context frame followed
-by four generated steps. Each state is held for 18 video frames while the
-per-player action arrows and the player-number badges animate in, so the fully
-annotated render of each state is the *last* frame of its cycle — video frames
-`15, 33, 51, 69, 79`. Those become `s1 … s5`, where **`s1` is the given context
-frame and `s2`–`s5` are generated**. Letterbox padding is trimmed with a single
-shared crop per game, so the three frames stay pixel-registered.
+by four generated steps. Each state is held for 18 video frames while its
+overlay cycles through three phases — the underlying game frame never changes
+within a cycle, only the annotation on top of it, so the phases mix freely:
 
-Any three consecutive states form a candidate window:
+| phase   | video frames        | what the badge shows |
+| ------- | ------------------- | -------------------- |
+| `post`  | –, 23, 41, 59, 77   | the action that produced this frame, bordered **green** if the model executed it correctly and **red** if not. None for `s1`, which no action led into. |
+| `clean` | 6, 25, 43, 61, 79   | nothing — orientation cones only, the plain game frame |
+| `pre`   | 15, 33, 51, 69, –   | in **white**, the action about to be applied. None for `s5`, where the video ends. |
 
-| option | frames  | note                                   |
-| ------ | ------- | -------------------------------------- |
-| A      | s1–s3   | starts from the given context frame    |
-| B      | s2–s4   | all three frames generated             |
-| C      | s3–s5   | all three generated, latest drift      |
+Letterbox padding is trimmed with a single shared crop per game, so the frames
+stay pixel-registered.
+
+**A window is built as `clean` → `post` → `post`.** The opening panel is the
+frame handed to the model, so it carries no action badges: annotating it would
+suggest those actions produced it. The two generated panels that follow are
+badged with the action that produced each of them.
+
+| option | states  | note                                     |
+| ------ | ------- | ---------------------------------------- |
+| A      | s1–s3   | opens on the given context frame         |
+| B      | s2–s4   | opens on a generated frame               |
+| C      | s3–s5   | opens on a generated frame, latest drift |
+
+The script reports which windows contain a **red** badge — an action the model
+did not execute correctly. That is usually not what you want on a poster, so
+the recommended window per game avoids one wherever a red-free window exists.
+Every window of `chemistry_three_cycles` contains one.
 
 ## Zoom tiers
 
@@ -36,7 +50,7 @@ sequence stays registered; the crop is then upscaled nearest-neighbour to
 
 | tier   | crop                                        | typical zoom |
 | ------ | ------------------------------------------- | ------------ |
-| *(whole map)* | `<game>/s1.png … s5.png`             | 1x           |
+| *(whole map)* | `<game>/<phase>_sN.png`              | 1x           |
 | `all`  | bounding box of every subject that moves    | 2–7x         |
 | `mid`  | fixed 288 px window on the busiest cluster  | 4x           |
 | `hero` | fixed 180 px window on the busiest cluster  | 6x           |
@@ -48,14 +62,15 @@ the whole-poster line-ups.
 
 ## Contents
 
-- `<game>/s1.png … s5.png` — the five annotated states, whole map, cropped
+- `<game>/{clean,pre,post}_sN.png` — every state in every phase, whole map
 - `<game>/strip_sX-sY.png` — the recommended window as a whole-map strip
 - `<game>/{all,mid,hero}_sX-sY/` — the recommended window at each zoom tier,
   as three frames plus a pre-composed `strip.png`
 - `_sheets/candidates_*.png` — every game × every window, whole map
 - `_sheets/{all,mid,hero}_candidates_*.png` — the same at each zoom tier
 - `_sheets/poster_set_A.png`, `_sheets/poster_set_B.png` — two line-ups
-- `manifest.json` — source video, frame indices, crop boxes and upscale factors
+- `manifest.json` — source video, phase frame indices, crop boxes, upscale
+  factors, and the green/red badge pixel counts behind the red-badge warning
 
 To write out a different window for a game, change its last field in `GAMES` in
 `tools/extract_poster_frames.py` and re-run; the contact sheets always cover all
