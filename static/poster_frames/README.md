@@ -35,10 +35,16 @@ badged with the action that produced each of them.
 | B      | s2–s4   | opens on a generated frame               |
 | C      | s3–s5   | opens on a generated frame, latest drift |
 
-The script reports which windows contain a **red** badge — an action the model
-did not execute correctly. That is usually not what you want on a poster, so
-the recommended window per game avoids one wherever a red-free window exists.
-Every window of `chemistry_three_cycles` contains one.
+Red appears on a badge in two unrelated ways, and position tells them apart:
+a red **ring** is the verdict that the model got that action wrong, while a red
+**centre** is the star glyph of the Interact action itself. The script counts
+both per window — `interact` and `wrong` — by differencing the annotated frame
+against the same state's clean render, which isolates the badges exactly.
+
+Interact steps are the most interesting to show (players firing, with the zap
+beam visible in the frame), so the recommended window per game is the one
+richest in Interact badges among those with no wrong ones. `coins` has no
+Interact in the rollout at all.
 
 ## Zoom tiers
 
@@ -51,26 +57,30 @@ sequence stays registered; the crop is then upscaled nearest-neighbour to
 | tier   | crop                                        | typical zoom |
 | ------ | ------------------------------------------- | ------------ |
 | *(whole map)* | `<game>/<phase>_sN.png`              | 1x           |
-| `all`  | bounding box of every subject that moves    | 2–7x         |
-| `mid`  | fixed 288 px window on the busiest cluster  | 4x           |
-| `hero` | fixed 180 px window on the busiest cluster  | 6x           |
+| `all`   | bounding box of every subject that moves    | 2–7x         |
+| `crowd` | smallest crop still holding the most badges | 3–6x         |
+| `mid`   | fixed 288 px window on the busiest cluster  | 4x           |
+| `hero`  | fixed 180 px window on the busiest cluster  | 6x           |
 
 `all` keeps the whole map legible but barely zooms on the wide maps, where the
 subjects are spread corner to corner. `hero` trades that context for sprites
 and action badges big enough to read across a room — it is the tier used for
-the whole-poster line-ups.
+the whole-poster line-ups. `crowd` sits between them: it grows the window past
+180 px only as far as it must to gather the rest of the party back into shot,
+so a seven-player game still reads as seven players. On the games where the
+players cluster it lands on the `hero` crop anyway.
 
 ## Contents
 
 - `<game>/{clean,pre,post}_sN.png` — every state in every phase, whole map
 - `<game>/strip_sX-sY.png` — the recommended window as a whole-map strip
-- `<game>/{all,mid,hero}_sX-sY/` — the recommended window at each zoom tier,
+- `<game>/{all,crowd,mid,hero}_sX-sY/` — the recommended window at each tier,
   as three frames plus a pre-composed `strip.png`
 - `_sheets/candidates_*.png` — every game × every window, whole map
-- `_sheets/{all,mid,hero}_candidates_*.png` — the same at each zoom tier
+- `_sheets/{all,crowd,mid,hero}_candidates_*.png` — the same at each tier
 - `_sheets/poster_set_A.png`, `_sheets/poster_set_B.png` — two line-ups
 - `manifest.json` — source video, phase frame indices, crop boxes, upscale
-  factors, and the green/red badge pixel counts behind the red-badge warning
+  factors, and per state the badge count, Interact count and wrong count
 
 To write out a different window for a game, change its last field in `GAMES` in
 `tools/extract_poster_frames.py` and re-run; the contact sheets always cover all

@@ -33,22 +33,26 @@
     ],
     "recommended_window": "s2-s4",
     "panels": "clean s2, post s3, post s4",
-    "badge_pixels": {
+    "badges": {
       "s2": {
-        "green": 244,
-        "red": 0
+        "players": 2,
+        "interact": 0,
+        "wrong": 0
       },
       "s3": {
-        "green": 240,
-        "red": 0
+        "players": 2,
+        "interact": 0,
+        "wrong": 0
       },
       "s4": {
-        "green": 248,
-        "red": 0
+        "players": 2,
+        "interact": 0,
+        "wrong": 0
       },
       "s5": {
-        "green": 250,
-        "red": 0
+        "players": 2,
+        "interact": 0,
+        "wrong": 0
       }
     },
     "zoom": {
@@ -61,6 +65,16 @@
         ],
         "upscale": 3,
         "px": 1194
+      },
+      "crowd": {
+        "crop": [
+          64,
+          0,
+          444,
+          380
+        ],
+        "upscale": 3,
+        "px": 1140
       },
       "mid": {
         "crop": [
@@ -118,22 +132,26 @@
     ],
     "recommended_window": "s2-s4",
     "panels": "clean s2, post s3, post s4",
-    "badge_pixels": {
+    "badges": {
       "s2": {
-        "green": 242,
-        "red": 17
+        "players": 2,
+        "interact": 0,
+        "wrong": 0
       },
       "s3": {
-        "green": 240,
-        "red": 6
+        "players": 2,
+        "interact": 0,
+        "wrong": 0
       },
       "s4": {
-        "green": 242,
-        "red": 12
+        "players": 2,
+        "interact": 0,
+        "wrong": 0
       },
       "s5": {
-        "green": 241,
-        "red": 389
+        "players": 3,
+        "interact": 2,
+        "wrong": 1
       }
     },
     "zoom": {
@@ -146,6 +164,16 @@
         ],
         "upscale": 7,
         "px": 980
+      },
+      "crowd": {
+        "crop": [
+          32,
+          0,
+          192,
+          160
+        ],
+        "upscale": 6,
+        "px": 960
       },
       "mid": {
         "crop": [
@@ -203,22 +231,26 @@
     ],
     "recommended_window": "s1-s3",
     "panels": "clean s1, post s2, post s3",
-    "badge_pixels": {
+    "badges": {
       "s2": {
-        "green": 482,
-        "red": 0
+        "players": 4,
+        "interact": 0,
+        "wrong": 0
       },
       "s3": {
-        "green": 491,
-        "red": 0
+        "players": 4,
+        "interact": 0,
+        "wrong": 0
       },
       "s4": {
-        "green": 477,
-        "red": 0
+        "players": 4,
+        "interact": 0,
+        "wrong": 0
       },
       "s5": {
-        "green": 501,
-        "red": 168
+        "players": 4,
+        "interact": 1,
+        "wrong": 0
       }
     },
     "zoom": {
@@ -231,6 +263,16 @@
         ],
         "upscale": 2,
         "px": 824
+      },
+      "crowd": {
+        "crop": [
+          128,
+          104,
+          308,
+          284
+        ],
+        "upscale": 6,
+        "px": 1080
       },
       "mid": {
         "crop": [
@@ -286,43 +328,57 @@
       512,
       512
     ],
-    "recommended_window": "s1-s3",
-    "panels": "clean s1, post s2, post s3",
-    "badge_pixels": {
+    "recommended_window": "s2-s4",
+    "panels": "clean s2, post s3, post s4",
+    "badges": {
       "s2": {
-        "green": 474,
-        "red": 19
+        "players": 4,
+        "interact": 0,
+        "wrong": 0
       },
       "s3": {
-        "green": 478,
-        "red": 18
+        "players": 4,
+        "interact": 0,
+        "wrong": 0
       },
       "s4": {
-        "green": 484,
-        "red": 122
+        "players": 4,
+        "interact": 1,
+        "wrong": 0
       },
       "s5": {
-        "green": 358,
-        "red": 298
+        "players": 4,
+        "interact": 2,
+        "wrong": 1
       }
     },
     "zoom": {
       "all": {
         "crop": [
-          22,
-          130,
-          402,
-          510
+          18,
+          110,
+          420,
+          512
         ],
         "upscale": 3,
-        "px": 1140
+        "px": 1206
+      },
+      "crowd": {
+        "crop": [
+          8,
+          136,
+          348,
+          476
+        ],
+        "upscale": 3,
+        "px": 1020
       },
       "mid": {
         "crop": [
-          56,
-          168,
-          344,
-          456
+          88,
+          184,
+          376,
+          472
         ],
         "upscale": 4,
         "px": 1152
@@ -330,9 +386,9 @@
       "hero": {
         "crop": [
           196,
-          224,
+          212,
           376,
-          404
+          392
         ],
         "upscale": 6,
         "px": 1080
@@ -371,43 +427,57 @@
       512,
       512
     ],
-    "recommended_window": "s1-s3",
-    "panels": "clean s1, post s2, post s3",
-    "badge_pixels": {
+    "recommended_window": "s2-s4",
+    "panels": "clean s2, post s3, post s4",
+    "badges": {
       "s2": {
-        "green": 893,
-        "red": 2
+        "players": 7,
+        "interact": 0,
+        "wrong": 0
       },
       "s3": {
-        "green": 907,
-        "red": 1
+        "players": 7,
+        "interact": 0,
+        "wrong": 0
       },
       "s4": {
-        "green": 899,
-        "red": 231
+        "players": 8,
+        "interact": 3,
+        "wrong": 0
       },
       "s5": {
-        "green": 753,
-        "red": 439
+        "players": 8,
+        "interact": 4,
+        "wrong": 1
       }
     },
     "zoom": {
       "all": {
         "crop": [
-          14,
           0,
-          504,
-          490
+          0,
+          466,
+          466
         ],
         "upscale": 2,
-        "px": 980
+        "px": 932
+      },
+      "crowd": {
+        "crop": [
+          0,
+          8,
+          400,
+          408
+        ],
+        "upscale": 3,
+        "px": 1200
       },
       "mid": {
         "crop": [
-          128,
-          128,
-          416,
-          416
+          96,
+          144,
+          384,
+          432
         ],
         "upscale": 4,
         "px": 1152
@@ -415,9 +485,9 @@
       "hero": {
         "crop": [
           152,
-          192,
+          224,
           332,
-          372
+          404
         ],
         "upscale": 6,
         "px": 1080
@@ -456,53 +526,67 @@
       512,
       480
     ],
-    "recommended_window": "s1-s3",
-    "panels": "clean s1, post s2, post s3",
-    "badge_pixels": {
+    "recommended_window": "s3-s5",
+    "panels": "clean s3, post s4, post s5",
+    "badges": {
       "s2": {
-        "green": 528,
-        "red": 5
+        "players": 4,
+        "interact": 0,
+        "wrong": 0
       },
       "s3": {
-        "green": 276,
-        "red": 241
+        "players": 4,
+        "interact": 0,
+        "wrong": 2
       },
       "s4": {
-        "green": 539,
-        "red": 160
+        "players": 4,
+        "interact": 1,
+        "wrong": 0
       },
       "s5": {
-        "green": 519,
-        "red": 232
+        "players": 4,
+        "interact": 1,
+        "wrong": 0
       }
     },
     "zoom": {
       "all": {
         "crop": [
-          52,
-          4,
-          497,
-          449
+          102,
+          22,
+          512,
+          432
         ],
         "upscale": 2,
-        "px": 890
+        "px": 820
+      },
+      "crowd": {
+        "crop": [
+          24,
+          24,
+          404,
+          404
+        ],
+        "upscale": 3,
+        "px": 1140
       },
       "mid": {
         "crop": [
-          192,
-          136,
-          480,
-          424
+          160,
+          16,
+          448,
+          304
         ],
         "upscale": 4,
         "px": 1152
       },
       "hero": {
         "crop": [
-          204,
-          244,
-          384,
-          424
+          252,
+          20,
+          432,
+          200
         ],
         "upscale": 6,
         "px": 1080
@@ -541,42 +625,56 @@
       512,
       512
     ],
-    "recommended_window": "s1-s3",
-    "panels": "clean s1, post s2, post s3",
-    "badge_pixels": {
+    "recommended_window": "s3-s5",
+    "panels": "clean s3, post s4, post s5",
+    "badges": {
       "s2": {
-        "green": 846,
-        "red": 0
+        "players": 7,
+        "interact": 0,
+        "wrong": 0
       },
       "s3": {
-        "green": 845,
-        "red": 0
+        "players": 7,
+        "interact": 0,
+        "wrong": 0
       },
       "s4": {
-        "green": 863,
-        "red": 164
+        "players": 7,
+        "interact": 2,
+        "wrong": 0
       },
       "s5": {
-        "green": 858,
-        "red": 410
+        "players": 7,
+        "interact": 5,
+        "wrong": 0
       }
     },
     "zoom": {
       "all": {
         "crop": [
-          52,
+          60,
           0,
           512,
-          460
+          452
         ],
         "upscale": 2,
-        "px": 920
+        "px": 904
+      },
+      "crowd": {
+        "crop": [
+          56,
+          64,
+          436,
+          444
+        ],
+        "upscale": 3,
+        "px": 1140
       },
       "mid": {
         "crop": [
-          160,
+          168,
           0,
-          448,
+          456,
           288
         ],
         "upscale": 4,
@@ -584,10 +682,10 @@
       },
       "hero": {
         "crop": [
-          236,
-          308,
-          416,
-          488
+          272,
+          16,
+          452,
+          196
         ],
         "upscale": 6,
         "px": 1080
@@ -626,24 +724,28 @@
       512,
       512
     ],
-    "recommended_window": "s2-s4",
-    "panels": "clean s2, post s3, post s4",
-    "badge_pixels": {
+    "recommended_window": "s3-s5",
+    "panels": "clean s3, post s4, post s5",
+    "badges": {
       "s2": {
-        "green": 488,
-        "red": 7
+        "players": 4,
+        "interact": 0,
+        "wrong": 0
       },
       "s3": {
-        "green": 489,
-        "red": 10
+        "players": 4,
+        "interact": 0,
+        "wrong": 0
       },
       "s4": {
-        "green": 487,
-        "red": 8
+        "players": 4,
+        "interact": 0,
+        "wrong": 0
       },
       "s5": {
-        "green": 487,
-        "red": 283
+        "players": 4,
+        "interact": 3,
+        "wrong": 0
       }
     },
     "zoom": {
@@ -651,18 +753,28 @@
         "crop": [
           22,
           0,
-          492,
-          470
+          496,
+          474
         ],
         "upscale": 2,
-        "px": 940
+        "px": 948
+      },
+      "crowd": {
+        "crop": [
+          40,
+          8,
+          440,
+          408
+        ],
+        "upscale": 3,
+        "px": 1200
       },
       "mid": {
         "crop": [
           184,
-          128,
+          96,
           472,
-          416
+          384
         ],
         "upscale": 4,
         "px": 1152
@@ -711,24 +823,28 @@
       512,
       512
     ],
-    "recommended_window": "s1-s3",
-    "panels": "clean s1, post s2, post s3",
-    "badge_pixels": {
+    "recommended_window": "s3-s5",
+    "panels": "clean s3, post s4, post s5",
+    "badges": {
       "s2": {
-        "green": 487,
-        "red": 7
+        "players": 4,
+        "interact": 0,
+        "wrong": 0
       },
       "s3": {
-        "green": 480,
-        "red": 9
+        "players": 4,
+        "interact": 0,
+        "wrong": 0
       },
       "s4": {
-        "green": 489,
-        "red": 89
+        "players": 4,
+        "interact": 1,
+        "wrong": 0
       },
       "s5": {
-        "green": 492,
-        "red": 337
+        "players": 4,
+        "interact": 4,
+        "wrong": 0
       }
     },
     "zoom": {
@@ -736,28 +852,38 @@
         "crop": [
           118,
           150,
-          346,
-          378
+          322,
+          354
         ],
-        "upscale": 4,
-        "px": 912
+        "upscale": 5,
+        "px": 1020
+      },
+      "crowd": {
+        "crop": [
+          104,
+          128,
+          284,
+          308
+        ],
+        "upscale": 6,
+        "px": 1080
       },
       "mid": {
         "crop": [
-          32,
-          64,
-          320,
-          352
+          0,
+          40,
+          288,
+          328
         ],
         "upscale": 4,
         "px": 1152
       },
       "hero": {
         "crop": [
-          140,
-          172,
-          320,
-          352
+          92,
+          148,
+          272,
+          328
         ],
         "upscale": 6,
         "px": 1080

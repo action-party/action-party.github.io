@@ -51,17 +51,17 @@ GAMES = {
     "cleanup": ("static/figures/crowded_ours.mp4", 0,
                 "Clean Up (4 players)", 1),
     "mining": ("static/figures/mining_ours.mp4", 0,
-               "Coop Mining (4 players)", 1),
+               "Coop Mining (4 players)", 2),
     "predator_prey_alley_hunt": ("static/figures/predator_prey_ours.mp4", 32,
-                                 "Predator Prey: Alley Hunt (7 players)", 1),
+                                 "Predator Prey: Alley Hunt (7 players)", 2),
     "chemistry_three_cycles": ("static/figures/chemistry_ours.mp4", 32,
-                               "Chemistry: Three Metabolic Cycles (7 players)", 1),
+                               "Chemistry: Three Metabolic Cycles (7 players)", 3),
     "predator_prey_open": ("supplementary/videos/predator_prey__open_s0.mp4", 56,
-                           "Predator Prey: Open (7 players)", 1),
+                           "Predator Prey: Open (7 players)", 3),
     "paintball_ctf": ("supplementary/videos/paintball__capture_the_flag_s0.mp4", 56,
-                      "Paintball: Capture the Flag (8 players)", 2),
+                      "Paintball: Capture the Flag (8 players)", 3),
     "fruit_market": ("supplementary/videos/fruit_market__concentric_rivers_s0.mp4", 56,
-                     "Fruit Market: Concentric Rivers (6 players)", 1),
+                     "Fruit Market: Concentric Rivers (6 players)", 3),
 }
 
 
@@ -173,20 +173,93 @@ def action_box(frames, margin=26, min_side=150, square=True):
     return (x0, y0, x1, y1)
 
 
-def verdict(clean, post, thresh=40):
-    """Count green- and red-bordered action badges on an annotated frame.
+def components(mask):
+    """Connected components (8-connected) of a boolean mask, as point arrays."""
+    h, w = mask.shape
+    seen = np.zeros_like(mask, bool)
+    out = []
+    for y in range(h):
+        for x in range(w):
+            if not mask[y, x] or seen[y, x]:
+                continue
+            stack, pts = [(y, x)], []
+            seen[y, x] = True
+            while stack:
+                cy, cx = stack.pop()
+                pts.append((cy, cx))
+                for dy in (-1, 0, 1):
+                    for dx in (-1, 0, 1):
+                        ny, nx = cy + dy, cx + dx
+                        if (0 <= ny < h and 0 <= nx < w
+                                and mask[ny, nx] and not seen[ny, nx]):
+                            seen[ny, nx] = True
+                            stack.append((ny, nx))
+            out.append(np.array(pts))
+    return out
 
-    Differencing against the same state's clean render isolates the badges
-    exactly, so the border colour can be read without finding the discs.  A red
-    border marks an action the model did not execute correctly - worth knowing
-    before one goes on a poster.
+
+def badge_discs(clean, post, thresh=40, min_area=150):
+    """Locate and read every action badge on an annotated frame.
+
+    The clean and annotated renders of a state share the same underlying game
+    frame, so differencing them isolates the badges exactly - no disc-finding
+    heuristics needed.  Within a disc, position separates the two uses of red:
+    a red *ring* is the verdict that the model got the action wrong, while a red
+    *centre* is the star glyph of the Interact action itself.
     """
     a = np.asarray(post, dtype=np.int16)
-    badge = np.abs(a - np.asarray(clean, dtype=np.int16)).max(axis=2) > thresh
-    r, g, b = a[..., 0], a[..., 1], a[..., 2]
-    green = badge & (g > r + 50) & (g > b + 50)
-    red = badge & (r > g + 60) & (r > b + 60)
-    return int(green.sum()), int(red.sum())
+    mask = np.abs(a - np.asarray(clean, dtype=np.int16)).max(axis=2) > thresh
+    discs = []
+    for pts in components(mask):
+        if len(pts) < min_area:
+            continue
+        cy, cx = pts.mean(0)
+        dist = np.hypot(pts[:, 0] - cy, pts[:, 1] - cx)
+        r = dist.max()
+        if not 8 <= r <= 40:
+            continue
+        px = a[pts[:, 0], pts[:, 1]].astype(np.int32)
+
+        def frac(sel, test):
+            q = px[sel]
+            return float(test(q).mean()) if len(q) else 0.0
+
+        is_red = lambda q: (q[:, 0] > q[:, 1] + 55) & (q[:, 0] > q[:, 2] + 55)
+        is_green = lambda q: (q[:, 1] > q[:, 0] + 40) & (q[:, 1] > q[:, 2] + 40)
+        ring, core = dist > 0.72 * r, dist < 0.55 * r
+        discs.append({
+            "cy": float(cy), "cx": float(cx), "r": float(r),
+            "interact": frac(core, is_red) > 0.4,
+            "wrong": frac(ring, is_red) > 0.5,
+            "correct": frac(ring, is_green) > 0.35,
+        })
+    return discs
+
+
+def crowd_box(discs, size, sides=range(180, 401, 20), step=8, margin=6):
+    """Smallest crop holding the most badges - and, at a tie, the most Interacts.
+
+    The fixed-side `hero` crop shows sprites large but on a wide map catches
+    only two or three of the players.  This grows the window just far enough to
+    gather the rest of the party back into shot.
+    """
+    w, h = size
+    best = None
+    for side in sides:
+        side = min(side, w, h)
+        for y0 in range(0, h - side + 1, step):
+            for x0 in range(0, w - side + 1, step):
+                inside = [d for d in discs
+                          if x0 + margin <= d["cx"] - d["r"]
+                          and d["cx"] + d["r"] <= x0 + side - margin
+                          and y0 + margin <= d["cy"] - d["r"]
+                          and d["cy"] + d["r"] <= y0 + side - margin]
+                score = (len(inside), sum(d["interact"] for d in inside), -side)
+                if best is None or score > best[0]:
+                    best = (score, (x0, y0, x0 + side, y0 + side))
+        if best and best[0][0] == len(discs):
+            break                      # everyone is in shot; no need to grow
+    return best[1] if best else (0, 0, w, h)
 
 
 def save_png(im, path, colors=256):
@@ -214,18 +287,24 @@ def cluster_box(frames, side, thresh=18):
     return (int(x0), int(y0), int(x0) + side, int(y0) + side)
 
 
-# zoom tiers, loosest first.  `None` means "fit every subject in the window";
+# Zoom tiers, loosest first.  `None` fits every subject that moves in the
+# window; `"crowd"` is the smallest crop still holding the most action badges;
 # a number is the side in px of a fixed crop over the busiest cluster.
-TIERS = {"all": None, "mid": 288, "hero": 180}
+TIERS = {"all": None, "crowd": "crowd", "mid": 288, "hero": 180}
 
 
-def zoom_window(frames, side, target=1024, apply_to=None):
+def zoom_window(frames, side, target=1024, apply_to=None, discs=()):
     """Crop the window to the action and upscale it to `target` px wide.
 
     `frames` is what the crop box is measured on; `apply_to` is what gets
     cropped, when the panels being shown differ from the ones being measured.
     """
-    box = action_box(frames) if side is None else cluster_box(frames, side)
+    if side is None:
+        box = action_box(frames)
+    elif side == "crowd":
+        box = crowd_box(discs, frames[0].size)
+    else:
+        box = cluster_box(frames, side)
     crops = [f.crop(box) for f in (apply_to or frames)]
     factor = max(1, int(round(target / crops[0].width)))
     if factor > 1:
@@ -272,11 +351,11 @@ def sheet(entries, path, tile=185):
 # Whole-poster line-ups to choose between: (title, [(game, window start)])
 POSTER_SETS = {
     "A": ("Set A - the four site games plus Alley Hunt (7 players)",
-          [("cooking", 2), ("cleanup", 1), ("mining", 1),
-           ("predator_prey_alley_hunt", 1), ("coins", 2)]),
+          [("cooking", 2), ("cleanup", 1), ("mining", 2),
+           ("predator_prey_alley_hunt", 2), ("coins", 2)]),
     "B": ("Set B - swaps in the light-palette and open-field rollouts",
-          [("cooking", 2), ("cleanup", 1), ("predator_prey_open", 1),
-           ("chemistry_three_cycles", 1), ("paintball_ctf", 2)]),
+          [("cooking", 2), ("cleanup", 1), ("predator_prey_open", 3),
+           ("chemistry_three_cycles", 3), ("paintball_ctf", 3)]),
 }
 
 
@@ -337,7 +416,7 @@ def main():
                 os.remove(os.path.join(dest, stale))
 
         layout = [states[p][i] for i, p in enumerate(LAYOUT_PHASE)]
-        marks = [None] + [verdict(states["clean"][i], states["post"][i])
+        discs = [None] + [badge_discs(states["clean"][i], states["post"][i])
                           for i in range(1, 5)]
         zooms = {}
         for start in range(1, 4):
@@ -349,9 +428,10 @@ def main():
             for tier, side in TIERS.items():
                 # place the crop on the annotated frames so no badge is clipped,
                 # then apply it to the panels actually being shown
-                zbox, factor, crops = zoom_window(layout[start - 1:start + 2], side,
-                                                  target=args.zoom_width,
-                                                  apply_to=panels)
+                zbox, factor, crops = zoom_window(
+                    layout[start - 1:start + 2], side, target=args.zoom_width,
+                    apply_to=panels,
+                    discs=discs[start] + discs[start + 1])
                 tiered[tier].setdefault(key, []).extend(crops)
                 if start != rec:     # only the recommended window is written out
                     continue
@@ -371,17 +451,26 @@ def main():
             "crop": list(box),
             "recommended_window": "s%d-s%d" % (rec, rec + 2),
             "panels": "clean s%d, post s%d, post s%d" % (rec, rec + 1, rec + 2),
-            "badge_pixels": {"s%d" % (i + 1): {"green": m[0], "red": m[1]}
-                             for i, m in enumerate(marks) if m},
+            "badges": {"s%d" % (i + 1): {
+                "players": len(d),
+                "interact": sum(x["interact"] for x in d),
+                "wrong": sum(x["wrong"] for x in d),
+            } for i, d in enumerate(discs) if d is not None},
             "zoom": zooms,
         }
-        flagged = ["s%d-s%d" % (w, w + 2) for w in range(1, 4)
-                   if any(marks[i][1] > 60 for i in (w, w + 1))]
-        print("%-26s s%d-s%d  crop=%s  %s%s" % (
-            key, rec, rec + 2, box,
+        def tally(w, field):
+            return sum(x[field] for i in (w, w + 1) for x in discs[i])
+
+        print("%-26s s%d-s%d  %s" % (
+            key, rec, rec + 2,
             "  ".join("%s=%dpx@%dx" % (t, z["crop"][2] - z["crop"][0],
-                                       z["upscale"]) for t, z in zooms.items()),
-            "  red badge in " + ", ".join(flagged) if flagged else ""))
+                                       z["upscale"]) for t, z in zooms.items())))
+        for w in range(1, 4):
+            print("%-26s   s%d-s%d  badges=%-2d interact=%-2d wrong=%d%s" % (
+                "", w, w + 2,
+                sum(len(discs[i]) for i in (w, w + 1)),
+                tally(w, "interact"), tally(w, "wrong"),
+                "  <- recommended" if w == rec else ""))
 
     keys = list(GAMES)
     for i in range(0, len(keys), 3):
